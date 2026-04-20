@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+<title>Calculadora PRO | Alarme com Memória</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        background: linear-gradient(145deg, #0a0f1a 0%, #0c1320 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Orbitron', monospace;
+        padding: 20px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .calc {
+        background: rgba(25, 35, 45, 0.95);
+        backdrop-filter: blur(2px);
+        border-radius: 48px;
+        padding: 24px 20px 28px 20px;
+        box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    /* Display do Relógio */
+    .clock-display {
+        background: linear-gradient(135deg, #0a0e16, #0b101a);
+        border-radius: 32px;
+        padding: 20px 20px;
+        margin-bottom: 18px;
+        text-align: center;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 5px 12px rgba(0,0,0,0.2);
+        border-bottom: 2px solid #2ecc71;
+    }
+
+    #clock {
+        font-family: 'Orbitron', 'Courier New', monospace;
+        font-size: 3.4rem;
+        font-weight: 700;
+        letter-spacing: 5px;
+        color: #2ecc71;
+        text-shadow: 0 0 10px #2ecc7150, 0 0 20px #2ecc7130;
+        background: #010101;
+        display: inline-block;
+        padding: 8px 24px;
+        border-radius: 60px;
+        width: auto;
+        min-width: 280px;
+    }
+
+    .alarm-status-badge {
+        margin-top: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .alarm-indicator {
+        background: #1e2a32;
+        padding: 8px 18px;
+        border-radius: 60px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #b0e0c0;
+    }
+
+    .next-alarm {
+        background: #2c3e2f;
+        padding: 8px 18px;
+        border-radius: 60px;
+        font-size: 0.8rem;
+        color: #c7f0cc;
+    }
+
+    /* Display da Calculadora */
+    .screen-main {
+        background: #0c0f14;
+        border-radius: 36px;
+        padding: 20px 24px;
+        margin-bottom: 12px;
+        box-shadow: inset 0 4px 12px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05);
+        border: 1px solid #2c3e2f;
+    }
+
+    #screen {
+        font-family: 'Orbitron', 'Courier New', monospace;
+        font-size: 3.5rem;
+        font-weight: 800;
+        text-align: right;
+        color: #2ecc71;
+        background: transparent;
+        letter-spacing: 3px;
+        word-wrap: break-word;
+        word-break: break-all;
+        line-height: 1.2;
+        min-height: 95px;
+        text-shadow: 0 0 8px #2ecc7140;
+    }
+
+    .history-area {
+        background: #0a0e14;
+        border-radius: 24px;
+        padding: 10px 16px;
+        margin-top: 6px;
+        border: 1px solid #2a3a2a;
+    }
+
+    #history {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        height: 52px;
+        overflow-y: auto;
+        text-align: right;
+        white-space: nowrap;
+        overflow-x: auto;
+    }
+
+    /* Grade de botões */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    button {
+        padding: 18px 0;
+        border: none;
+        border-radius: 28px;
+        font-size: 1.5rem;
+        font-weight: 600;
+        font-family: 'Inter', monospace;
+        background: #1e2a30;
+        color: #ecf0f1;
+        cursor: pointer;
+        transition: all 0.12s linear;
+        box-shadow: 0 5px 0 #0f151a;
+        transform: translateY(-2px);
+    }
+
+    button:active {
+        transform: translateY(3px);
+        box-shadow: 0 1px 0 #0f151a;
+    }
+
+    .op { background: #e67e22; box-shadow: 0 5px 0 #b45f1b; }
+    .eq { background: #27ae60; box-shadow: 0 5px 0 #1e8449; }
+    .clear { background: #e74c3c; box-shadow: 0 5px 0 #c0392b; }
+    .special { background: #5d6d7e; box-shadow: 0 5px 0 #3e4a5a; }
+
+    /* Painel de Alarme */
+    .alarm-panel {
+        margin-top: 24px;
+        background: linear-gradient(120deg, #141e24, #10171f);
+        border-radius: 32px;
+        padding: 18px 18px 20px;
+        border: 1px solid #2ecc7140;
+    }
+
+    .alarm-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #aac8b0;
+        margin-bottom: 14px;
+    }
+
+    #alarmTime {
+        width: 100%;
+        padding: 14px 16px;
+        background: #0f171e;
+        border: 1.5px solid #2ecc71;
+        border-radius: 60px;
+        font-size: 1.5rem;
+        font-family: 'Orbitron', monospace;
+        color: #2ecc71;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 16px;
+        outline: none;
+    }
+
+    /* Dias da semana em UMA LINHA */
+    .days {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 6px;
+        margin-bottom: 20px;
+        justify-content: center;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .days button {
+        flex: 0 0 auto;
+        min-width: 46px;
+        padding: 10px 0;
+        font-size: 0.9rem;
+        font-weight: bold;
+        background: #25333c;
+        box-shadow: 0 3px 0 #10171f;
+        border-radius: 40px;
+        transform: none;
+    }
+
+    .days button.active {
+        background: #f39c12 !important;
+        color: #1a1f2a;
+        box-shadow: 0 3px 0 #c97e0a;
+    }
+
+    .save-alarm-btn {
+        background: #2ecc71;
+        width: 100%;
+        padding: 14px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border-radius: 60px;
+        color: #0a1f12;
+        box-shadow: 0 5px 0 #229954;
+    }
+
+    /* Modal de Alarme Tocando */
+    .alarm-modal {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #1a1f2e, #0d111c);
+        backdrop-filter: blur(20px);
+        padding: 25px 20px 30px;
+        border-radius: 40px 40px 0 0;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+        z-index: 2000;
+        animation: slideUp 0.3s ease;
+        border-top: 3px solid #f39c12;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+
+    .alarm-modal h3 {
+        color: #ffaa44;
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 10px;
+        font-family: 'Orbitron', monospace;
+    }
+
+    .alarm-modal .alarm-time-big {
+        text-align: center;
+        font-size: 2.5rem;
+        font-family: 'Orbitron', monospace;
+        color: #2ecc71;
+        margin-bottom: 20px;
+    }
+
+    .alarm-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .alarm-actions button {
+        flex: 1;
+        padding: 16px;
+        font-size: 1.2rem;
+        border-radius: 60px;
+        font-weight: bold;
+        transform: none;
+        box-shadow: 0 5px 0 rgba(0,0,0,0.3);
+    }
+
+    .btn-stop {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .btn-snooze {
+        background: #f39c12;
+        color: #1a1a1a;
+    }
+
+    @media (max-width: 480px) {
+        .container { max-width: 100%; padding: 0; }
+        .calc { padding: 18px 15px 22px; }
+        #clock { font-size: 2rem; letter-spacing: 2px; min-width: auto; padding: 6px 12px; }
+        #screen { font-size: 2.2rem; min-height: 70px; }
+        .grid { gap: 8px; }
+        button { padding: 12px 0; font-size: 1.2rem; }
+        .days button { min-width: 38px; padding: 8px 0; font-size: 0.75rem; }
+        .alarm-modal h3 { font-size: 1.3rem; }
+        .alarm-modal .alarm-time-big { font-size: 1.8rem; }
+        .alarm-actions button { padding: 12px; font-size: 1rem; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="calc">
+        <div class="clock-display">
+            <div id="clock">--:--:--</div>
+            <div class="alarm-status-badge">
+                <div class="alarm-indicator" id="alarmStatusIcon">🔔 Alarme: OFF</div>
+                <div class="next-alarm" id="nextAlarmInfo">--:--</div>
+            </div>
+        </div>
+
+        <div class="screen-main">
+            <div id="screen">0</div>
+        </div>
+        <div class="history-area">
+            <div id="history"></div>
+        </div>
+
+        <div class="grid">
+            <button class="clear" data-action="clear">AC</button>
+            <button class="op" data-op="/">÷</button>
+            <button class="op" data-op="*">×</button>
+            <button class="op" data-op="-">−</button>
+            <button data-val="7">7</button>
+            <button data-val="8">8</button>
+            <button data-val="9">9</button>
+            <button class="op" data-op="+">+</button>
+            <button data-val="4">4</button>
+            <button data-val="5">5</button>
+            <button data-val="6">6</button>
+            <button class="eq" data-action="equal">=</button>
+            <button data-val="1">1</button>
+            <button data-val="2">2</button>
+            <button data-val="3">3</button>
+            <button class="special" data-val=".">.</button>
+            <button data-val="0">0</button>
+            <button class="special" data-val="%">%</button>
+            <button class="special" data-action="backspace">⌫</button>
+            <button class="special" data-action="paren">( )</button>
+        </div>
+
+        <div class="alarm-panel">
+            <div class="alarm-title">⏰ PROGRAMAR ALARME (24h)</div>
+            <input type="time" id="alarmTime" step="60">
+            <div class="days" id="daysContainer"></div>
+            <button class="save-alarm-btn" id="saveAlarmBtn">💾 SALVAR ALARME</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ==================== CALCULADORA ====================
+        let expression = "";
+        const screenElement = document.getElementById('screen');
+        const historyElement = document.getElementById('history');
+
+        function updateScreen() {
+            let display = expression === "" ? "0" : expression;
+            if (display.length > 12) {
+                display = display.slice(0, 12);
+                expression = display;
+            }
+            screenElement.innerText = display;
+        }
+
+        function appendValue(val) {
+            if (expression === "Erro") expression = "";
+            if ((expression + val).length <= 12) {
+                expression += val;
+            }
+            updateScreen();
+        }
+
+        function addOperator(op) {
+            if (expression === "Erro") expression = "";
+            const lastChar = expression.slice(-1);
+            if (['+', '-', '*', '/', '%'].includes(lastChar)) {
+                expression = expression.slice(0, -1) + op;
+            } else if (expression !== "") {
+                if ((expression + op).length <= 12) expression += op;
+            } else if (op === '-') {
+                expression = '-';
+            }
+            updateScreen();
+        }
+
+        function clearAll() { 
+            expression = ""; 
+            updateScreen(); 
+        }
+        
+        function backspace() { 
+            if (expression === "Erro") expression = ""; 
+            else expression = expression.slice(0, -1); 
+            updateScreen(); 
+        }
+        
+        function addParenthesis() {
+            if (expression === "Erro") expression = "";
+            const openCount = (expression.match(/\(/g) || []).length;
+            const closeCount = (expression.match(/\)/g) || []).length;
+            const newChar = openCount > closeCount ? ")" : "(";
+            if ((expression + newChar).length <= 12) expression += newChar;
+            updateScreen();
+        }
+
+        function evaluateSafe(expr) {
+            let calcExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
+            try {
+                const result = Function('"use strict";return (' + calcExpr + ')')();
+                if (isNaN(result) || !isFinite(result)) throw new Error();
+                return parseFloat(result.toFixed(10));
+            } catch (e) { 
+                return NaN; 
+            }
+        }
+
+        function calculateResult() {
+            if (expression === "" || expression === "Erro") {
+                expression = "Erro";
+                updateScreen();
+                setTimeout(() => { if (expression === "Erro") expression = ""; updateScreen(); }, 1000);
+                return;
+            }
+            let finalExpr = expression;
+            const lastChar = finalExpr.slice(-1);
+            if (['+', '-', '*', '/', '%'].includes(lastChar)) finalExpr = finalExpr.slice(0, -1);
+            if (finalExpr === "") finalExpr = "0";
+            const result = evaluateSafe(finalExpr);
+            if (!isNaN(result)) {
+                let resultStr = result.toString();
+                if (resultStr.length > 12) resultStr = result.toExponential(6).slice(0, 12);
+                const historyEntry = `${expression} = ${resultStr}`;
+                historyElement.innerHTML = historyEntry + "<br>" + historyElement.innerHTML;
+                if (historyElement.children.length > 12 && historyElement.lastChild) {
+                    historyElement.lastChild.remove();
+                }
+                try { localStorage.setItem('calcHistory', historyElement.innerHTML); } catch(e) {}
+                expression = resultStr;
+                updateScreen();
+            } else {
+                expression = "Erro";
+                updateScreen();
+                setTimeout(() => { if (expression === "Erro") expression = ""; updateScreen(); }, 1200);
+            }
+        }
+
+        // Carregar histórico
+        try {
+            const savedHistory = localStorage.getItem('calcHistory');
+            if (savedHistory) historyElement.innerHTML = savedHistory;
+        } catch(e) {}
+
+        // Eventos dos botões da calculadora
+        document.querySelectorAll('.grid button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const action = btn.dataset.action;
+                const val = btn.dataset.val;
+                const op = btn.dataset.op;
+                
+                if (action === 'clear') clearAll();
+                else if (action === 'equal') calculateResult();
+                else if (action === 'backspace') backspace();
+                else if (action === 'paren') addParenthesis();
+                else if (val !== undefined) appendValue(val);
+                else if (op !== undefined) addOperator(op);
+            });
+        });
+
+        // Teclado
+        document.addEventListener('keydown', (e) => {
+            const key = e.key;
+            if (!isNaN(Number(key)) && key !== ' ') { appendValue(key); e.preventDefault(); }
+            else if (key === '+' || key === '-' || key === '*' || key === '/') { addOperator(key); e.preventDefault(); }
+            else if (key === 'Enter') { calculateResult(); e.preventDefault(); }
+            else if (key === 'Escape') { clearAll(); e.preventDefault(); }
+            else if (key === 'Backspace') { backspace(); e.preventDefault(); }
+            else if (key === '%') { appendValue('%'); e.preventDefault(); }
+            else if (key === '.') { appendValue('.'); e.preventDefault(); }
+        });
+
+        updateScreen();
+
+        // ==================== ALARME COM SALVAMENTO PERMANENTE ====================
+        let alarmConfig = { time: "07:30", days: [1,2,3,4,5] };
+        let alarmTriggeredMinute = -1;
+        let isRinging = false;
+        let beepInterval = null;
+        let alarmTimeout = null;
+        let snoozeTimeout = null;
+        let audioCtx = null;
+
+        const weekNamesShort = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+        const weekNamesFull = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+        // Função para salvar configurações do alarme no localStorage
+        function saveAlarmToLocal() {
+            try {
+                const alarmData = {
+                    time: alarmConfig.time,
+                    days: alarmConfig.days,
+                    lastUpdated: new Date().toISOString()
+                };
+                localStorage.setItem('proAlarmConfig', JSON.stringify(alarmData));
+                console.log('✅ Alarme salvo com sucesso:', alarmConfig.time, 'Dias:', alarmConfig.days);
+            } catch(e) {
+                console.error('Erro ao salvar alarme:', e);
+            }
+        }
+
+        // Função para carregar configurações do alarme do localStorage
+        function loadAlarmConfig() {
+            try {
+                const saved = localStorage.getItem('proAlarmConfig');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.time) {
+                        alarmConfig.time = parsed.time;
+                        console.log('🕐 Horário carregado:', alarmConfig.time);
+                    }
+                    if (parsed.days && Array.isArray(parsed.days)) {
+                        alarmConfig.days = parsed.days;
+                        console.log('📅 Dias carregados:', alarmConfig.days);
+                    }
+                } else {
+                    console.log('📌 Nenhum alarme salvo, usando configuração padrão');
+                }
+            } catch(e) {
+                console.error('Erro ao carregar alarme:', e);
+            }
+            
+            // Atualizar o input de hora
+            const timeInput = document.getElementById('alarmTime');
+            if (timeInput) timeInput.value = alarmConfig.time;
+            
+            updateAlarmUI();
+            buildDaySelector();
+        }
+
+        function buildDaySelector() {
+            const container = document.getElementById('daysContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 0; i < 7; i++) {
+                const btn = document.createElement('button');
+                btn.innerText = weekNamesShort[i];
+                btn.dataset.day = i;
+                if (alarmConfig.days.includes(i)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    const dayVal = parseInt(btn.dataset.day);
+                    if (alarmConfig.days.includes(dayVal)) {
+                        alarmConfig.days = alarmConfig.days.filter(d => d !== dayVal);
+                        btn.classList.remove('active');
+                    } else {
+                        alarmConfig.days.push(dayVal);
+                        btn.classList.add('active');
+                    }
+                    saveAlarmToLocal(); // Salva automaticamente ao clicar nos dias
+                    updateAlarmUI();
+                });
+                container.appendChild(btn);
+            }
+        }
+
+        function saveAlarmSettings() {
+            const timeInput = document.getElementById('alarmTime');
+            if (timeInput && timeInput.value) {
+                alarmConfig.time = timeInput.value;
+                saveAlarmToLocal(); // Salva permanentemente
+                updateAlarmUI();
+                showToast(`⏰ Alarme definido para ${alarmConfig.time} e salvo!`, '#2ecc71');
+                alarmTriggeredMinute = -1;
+                if (snoozeTimeout) { clearTimeout(snoozeTimeout); snoozeTimeout = null; }
+            }
+        }
+
+        function updateAlarmUI() {
+            const statusSpan = document.getElementById('alarmStatusIcon');
+            const nextInfoSpan = document.getElementById('nextAlarmInfo');
+            if (!alarmConfig.time) {
+                if(statusSpan) statusSpan.innerHTML = "🔕 Alarme: OFF";
+                return;
+            }
+            if (alarmConfig.days.length === 0) {
+                if(statusSpan) statusSpan.innerHTML = `⚠️ Alarme ${alarmConfig.time} (sem dias)`;
+                if(nextInfoSpan) nextInfoSpan.innerHTML = "adicione dias";
+            } else {
+                if(statusSpan) statusSpan.innerHTML = `🔔 Alarme ${alarmConfig.time} (${alarmConfig.days.map(d=>weekNamesShort[d]).join(',')})`;
+                const now = new Date();
+                const [alarmH, alarmM] = alarmConfig.time.split(':').map(Number);
+                for (let offset = 0; offset <= 7; offset++) {
+                    const checkDate = new Date(now);
+                    checkDate.setDate(now.getDate() + offset);
+                    checkDate.setHours(alarmH, alarmM, 0, 0);
+                    if (checkDate >= now && alarmConfig.days.includes(checkDate.getDay())) {
+                        const diffH = Math.floor((checkDate - now) / 3600000);
+                        const diffM = Math.floor(((checkDate - now) % 3600000) / 60000);
+                        if (nextInfoSpan) {
+                            if (diffH < 24) nextInfoSpan.innerHTML = `🔜 em ${diffH}h ${diffM}min`;
+                            else nextInfoSpan.innerHTML = `📅 ${weekNamesFull[checkDate.getDay()]}`;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Som de alarme profissional
+        function startProfessionalAlarm() {
+            stopBeepSound();
+            
+            function playBeepSequence() {
+                if (!isRinging) return;
+                
+                try {
+                    if (audioCtx && audioCtx.state !== 'closed') {
+                        try { audioCtx.close(); } catch(e) {}
+                    }
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    audioCtx.resume();
+                    
+                    const now = audioCtx.currentTime;
+                    
+                    const osc1 = audioCtx.createOscillator();
+                    const gain1 = audioCtx.createGain();
+                    osc1.connect(gain1);
+                    gain1.connect(audioCtx.destination);
+                    osc1.frequency.value = 880;
+                    gain1.gain.value = 0.45;
+                    osc1.start(now);
+                    gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+                    osc1.stop(now + 0.2);
+                    
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    osc2.frequency.value = 880;
+                    gain2.gain.value = 0.45;
+                    osc2.start(now + 0.3);
+                    gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+                    osc2.stop(now + 0.5);
+                    
+                    const osc3 = audioCtx.createOscillator();
+                    const gain3 = audioCtx.createGain();
+                    osc3.connect(gain3);
+                    gain3.connect(audioCtx.destination);
+                    osc3.frequency.value = 880;
+                    gain3.gain.value = 0.45;
+                    osc3.start(now + 0.6);
+                    gain3.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+                    osc3.stop(now + 0.8);
+                    
+                } catch(e) {}
+            }
+            
+            playBeepSequence();
+            
+            beepInterval = setInterval(() => {
+                if (isRinging) {
+                    playBeepSequence();
+                } else {
+                    clearInterval(beepInterval);
+                    beepInterval = null;
+                }
+            }, 2000);
+        }
+
+        function stopBeepSound() {
+            if (beepInterval) {
+                clearInterval(beepInterval);
+                beepInterval = null;
+            }
+            if (audioCtx) {
+                try { audioCtx.close(); } catch(e) {}
+                audioCtx = null;
+            }
+        }
+
+        function showAlarmModal() {
+            const existingModal = document.querySelector('.alarm-modal');
+            if (existingModal) existingModal.remove();
+            
+            const modal = document.createElement('div');
+            modal.className = 'alarm-modal';
+            const [hour, minute] = alarmConfig.time.split(':');
+            modal.innerHTML = `
+                <h3>🔔 ALARME!</h3>
+                <div class="alarm-time-big">${hour}:${minute}</div>
+                <div class="alarm-actions">
+                    <button class="btn-stop" id="stopAlarmBtn">⏹️ PARAR</button>
+                    <button class="btn-snooze" id="snoozeAlarmBtn">⏰ SONECA (5min)</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('stopAlarmBtn').addEventListener('click', () => {
+                stopAlarm();
+                modal.remove();
+            });
+            
+            document.getElementById('snoozeAlarmBtn').addEventListener('click', () => {
+                snoozeAlarm();
+                modal.remove();
+            });
+        }
+        
+        function stopAlarm() {
+            if (!isRinging) return;
+            isRinging = false;
+            stopBeepSound();
+            if (alarmTimeout) { clearTimeout(alarmTimeout); alarmTimeout = null; }
+            if (snoozeTimeout) { clearTimeout(snoozeTimeout); snoozeTimeout = null; }
+        }
+        
+        function snoozeAlarm() {
+            stopAlarm();
+            isRinging = false;
+            if (snoozeTimeout) clearTimeout(snoozeTimeout);
+            snoozeTimeout = setTimeout(() => {
+                triggerAlarmNow();
+                snoozeTimeout = null;
+            }, 5 * 60 * 1000);
+            showToast(`😴 Soneca ativada! Alarme tocará em 5 minutos.`, '#f39c12');
+        }
+        
+        function triggerAlarmNow() {
+            if (isRinging) return;
+            isRinging = true;
+            startProfessionalAlarm();
+            showAlarmModal();
+            
+            if (alarmTimeout) clearTimeout(alarmTimeout);
+            alarmTimeout = setTimeout(() => {
+                if (isRinging) {
+                    stopAlarm();
+                    const modal = document.querySelector('.alarm-modal');
+                    if (modal) modal.remove();
+                }
+            }, 60000);
+        }
+        
+        function checkAlarm(nowDate) {
+            if (!alarmConfig.time) return;
+            if (isRinging) return;
+            
+            const [alarmHour, alarmMin] = alarmConfig.time.split(':').map(Number);
+            const currentMinKey = nowDate.getHours() * 60 + nowDate.getMinutes();
+            
+            if (alarmTriggeredMinute === currentMinKey) return;
+            
+            if (nowDate.getHours() === alarmHour && nowDate.getMinutes() === alarmMin && alarmConfig.days.includes(nowDate.getDay())) {
+                alarmTriggeredMinute = currentMinKey;
+                triggerAlarmNow();
+            }
+        }
+        
+        function showToast(msg, bgColor) {
+            const toast = document.createElement('div');
+            toast.style.position = 'fixed';
+            toast.style.bottom = '100px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = bgColor;
+            toast.style.color = 'white';
+            toast.style.padding = '10px 20px';
+            toast.style.borderRadius = '40px';
+            toast.style.fontWeight = 'bold';
+            toast.style.zIndex = '1100';
+            toast.style.fontSize = '0.9rem';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+        
+        function updateClockAndAlarm() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const clockElement = document.getElementById('clock');
+            if (clockElement) clockElement.innerText = `${hours}:${minutes}:${seconds}`;
+            checkAlarm(now);
+        }
+        
+        const saveBtn = document.getElementById('saveAlarmBtn');
+        if (saveBtn) saveBtn.addEventListener('click', saveAlarmSettings);
+        
+        // Carregar configurações salvas ao iniciar
+        loadAlarmConfig();
+        
+        setInterval(updateClockAndAlarm, 200);
+        updateClockAndAlarm();
+        
+        // Mostrar mensagem de boas-vindas com status do alarme
+        setTimeout(() => {
+            if (alarmConfig.days.length > 0) {
+                showToast(`📌 Alarme carregado: ${alarmConfig.time}`, '#2ecc71');
+            }
+        }, 500);
+    })();
+</script>
+</body>
+</html>

@@ -242,7 +242,7 @@
             <button data-val="3">3</button>
             <button class="special" data-val=".">.</button>
             <button data-val="0">0</button>
-            <button class="special" data-val="%">%</button>
+            <button class="special" data-action="percent">%</button>
             <button class="special" data-action="backspace">⌫</button>
             <button class="special" data-action="paren">( )</button>
         </div>
@@ -286,6 +286,57 @@
             updateScreen();
         }
 
+        // Função para calcular porcentagem corretamente
+        function calculatePercentage() {
+            if (expression === "Erro" || expression === "") return;
+            
+            // Pega o último número e o operador anterior
+            const match = expression.match(/([+\-*/])([^+\-*/]+)$/);
+            
+            if (match) {
+                const operator = match[1];
+                const percentValue = parseFloat(match[2]);
+                
+                if (!isNaN(percentValue)) {
+                    // Pega o número anterior
+                    const parts = expression.split(/[+\-*/]/);
+                    const previousValue = parseFloat(parts[parts.length - 2]);
+                    
+                    if (!isNaN(previousValue)) {
+                        let result;
+                        switch(operator) {
+                            case '+':
+                                result = previousValue + (previousValue * percentValue / 100);
+                                break;
+                            case '-':
+                                result = previousValue - (previousValue * percentValue / 100);
+                                break;
+                            case '*':
+                                result = previousValue * (percentValue / 100);
+                                break;
+                            case '/':
+                                result = previousValue / (percentValue / 100);
+                                break;
+                            default:
+                                result = percentValue / 100;
+                        }
+                        
+                        // Substitui a expressão pelo resultado
+                        expression = result.toString();
+                        updateScreen();
+                        return;
+                    }
+                }
+            }
+            
+            // Se não houver operador, apenas divide por 100
+            const num = parseFloat(expression);
+            if (!isNaN(num)) {
+                expression = (num / 100).toString();
+                updateScreen();
+            }
+        }
+
         function clearAll() { 
             expression = ""; 
             updateScreen(); 
@@ -307,7 +358,7 @@
         }
 
         function evaluateSafe(expr) {
-            let calcExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
+            let calcExpr = expr.replace(/×/g, '*').replace(/÷/g, '/');
             try {
                 const result = Function('"use strict";return (' + calcExpr + ')')();
                 if (isNaN(result) || !isFinite(result)) throw new Error();
@@ -326,7 +377,7 @@
             }
             let finalExpr = expression;
             const lastChar = finalExpr.slice(-1);
-            if (['+', '-', '*', '/', '%'].includes(lastChar)) finalExpr = finalExpr.slice(0, -1);
+            if (['+', '-', '*', '/'].includes(lastChar)) finalExpr = finalExpr.slice(0, -1);
             if (finalExpr === "") finalExpr = "0";
             const result = evaluateSafe(finalExpr);
             if (!isNaN(result)) {
@@ -383,6 +434,7 @@
                 else if (action === 'equal') calculateResult();
                 else if (action === 'backspace') backspace();
                 else if (action === 'paren') addParenthesis();
+                else if (action === 'percent') calculatePercentage();
                 else if (val !== undefined) appendValue(val);
                 else if (op !== undefined) addOperator(op);
             });
@@ -391,13 +443,34 @@
         // Teclado
         document.addEventListener('keydown', (e) => {
             const key = e.key;
-            if (!isNaN(Number(key)) && key !== ' ') { appendValue(key); e.preventDefault(); }
-            else if (key === '+' || key === '-' || key === '*' || key === '/') { addOperator(key); e.preventDefault(); }
-            else if (key === 'Enter') { calculateResult(); e.preventDefault(); }
-            else if (key === 'Escape') { clearAll(); e.preventDefault(); }
-            else if (key === 'Backspace') { backspace(); e.preventDefault(); }
-            else if (key === '%') { appendValue('%'); e.preventDefault(); }
-            else if (key === '.') { appendValue('.'); e.preventDefault(); }
+            if (!isNaN(Number(key)) && key !== ' ') { 
+                appendValue(key); 
+                e.preventDefault(); 
+            }
+            else if (key === '+' || key === '-' || key === '*' || key === '/') { 
+                addOperator(key); 
+                e.preventDefault(); 
+            }
+            else if (key === 'Enter') { 
+                calculateResult(); 
+                e.preventDefault(); 
+            }
+            else if (key === 'Escape') { 
+                clearAll(); 
+                e.preventDefault(); 
+            }
+            else if (key === 'Backspace') { 
+                backspace(); 
+                e.preventDefault(); 
+            }
+            else if (key === '%') { 
+                calculatePercentage(); 
+                e.preventDefault(); 
+            }
+            else if (key === '.') { 
+                appendValue('.'); 
+                e.preventDefault(); 
+            }
         });
 
         updateScreen();
@@ -416,7 +489,7 @@
         setInterval(updateClock, 1000);
         updateClock();
         
-        console.log('✅ Calculador com relógio iniciada!');
+        console.log('✅ Calculadora com porcentagem corrigida iniciada!');
     })();
 </script>
 </body>

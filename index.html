@@ -129,6 +129,11 @@
     }
 
     body.light .history-item {
+      background: rgba(90, 106, 154, 0.2);
+      color: #2a3050;
+    }
+    
+    body.light .history-item-last {
       background: #e6762e;
       color: #ffffff;
     }
@@ -139,7 +144,7 @@
       min-height: 100vh;
       background: rgba(18, 22, 35, 0.92);
       backdrop-filter: blur(20px);
-      padding: 20px 16px 24px;
+      padding: 20px 16px 20px;
       display: flex;
       flex-direction: column;
     }
@@ -149,7 +154,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
       gap: 10px;
     }
@@ -198,12 +203,12 @@
       transform: scale(0.95);
     }
 
-    /* DISPLAY - MAIS ELEGANTE E INTEGRADO */
+    /* DISPLAY */
     .display {
       background: linear-gradient(145deg, #0d1222, #080c1a);
       border-radius: 28px;
-      padding: 20px 22px;
-      margin-bottom: 20px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
       border: 1px solid rgba(114, 137, 218, 0.25);
       box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
       transition: all 0.3s ease;
@@ -216,7 +221,7 @@
       color: #ff9f4a;
       text-align: right;
       min-height: 20px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       white-space: nowrap;
       opacity: 0.7;
       letter-spacing: 1px;
@@ -224,67 +229,83 @@
     }
 
     .display-screen {
-      min-height: 90px;
       width: 100%;
       overflow-x: auto;
+      overflow-y: hidden;
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
       align-items: center;
+      scrollbar-width: thin;
+      padding-bottom: 4px;
     }
 
     .main-display {
       font-family: 'Orbitron', monospace;
       font-weight: 800;
       color: #4aff9e;
-      text-align: right;
+      text-align: left;
       white-space: nowrap;
-      text-shadow: 0 0 8px #4aff9e, 0 0 12px rgba(74, 255, 158, 0.3);
+      text-shadow: 0 0 10px #4aff9e, 0 0 15px rgba(74, 255, 158, 0.4);
       letter-spacing: 2px;
-      font-size: 3.5rem;
+      display: inline-block;
     }
     
-    .font-size-1 { font-size: 3.8rem; }
-    .font-size-2 { font-size: 3.4rem; }
-    .font-size-3 { font-size: 3.0rem; }
+    .font-size-1 { font-size: 3.5rem; }
+    .font-size-2 { font-size: 3.2rem; }
+    .font-size-3 { font-size: 2.9rem; }
     .font-size-4 { font-size: 2.6rem; }
-    .font-size-5 { font-size: 2.2rem; }
-    .font-size-6 { font-size: 1.9rem; }
-    .font-size-7 { font-size: 1.6rem; }
-    .font-size-8 { font-size: 1.3rem; }
+    .font-size-5 { font-size: 2.3rem; }
+    .font-size-6 { font-size: 2.0rem; }
+    .font-size-7 { font-size: 1.7rem; }
+    .font-size-8 { font-size: 1.4rem; }
     
-    .main-display.color-green { color: #4aff9e; text-shadow: 0 0 8px #4aff9e, 0 0 12px rgba(74, 255, 158, 0.3); }
-    .main-display.color-blue { color: #5ba9ff; text-shadow: 0 0 8px #5ba9ff, 0 0 12px rgba(91, 169, 255, 0.3); }
-    .main-display.color-cyan { color: #00ffff; text-shadow: 0 0 8px #00ffff, 0 0 12px rgba(0, 255, 255, 0.3); }
-    .main-display.color-pink { color: #ff69b4; text-shadow: 0 0 8px #ff69b4, 0 0 12px rgba(255, 105, 180, 0.3); }
-    .main-display.color-yellow { color: #ffdd44; text-shadow: 0 0 8px #ffdd44, 0 0 12px rgba(255, 221, 68, 0.3); }
-    .main-display.color-white { color: #ffffff; text-shadow: 0 0 8px #ffffff, 0 0 12px rgba(255, 255, 255, 0.3); }
+    .main-display.color-green { color: #4aff9e; text-shadow: 0 0 10px #4aff9e, 0 0 15px rgba(74, 255, 158, 0.4); }
+    .main-display.color-blue { color: #5ba9ff; text-shadow: 0 0 10px #5ba9ff, 0 0 15px rgba(91, 169, 255, 0.4); }
+    .main-display.color-cyan { color: #00ffff; text-shadow: 0 0 10px #00ffff, 0 0 15px rgba(0, 255, 255, 0.4); }
+    .main-display.color-pink { color: #ff69b4; text-shadow: 0 0 10px #ff69b4, 0 0 15px rgba(255, 105, 180, 0.4); }
+    .main-display.color-yellow { color: #ffdd44; text-shadow: 0 0 10px #ffdd44, 0 0 15px rgba(255, 221, 68, 0.4); }
+    .main-display.color-white { color: #ffffff; text-shadow: 0 0 10px #ffffff, 0 0 15px rgba(255, 255, 255, 0.4); }
 
-    body.light .main-display.color-green { color: #2a8f4a; text-shadow: 0 0 4px #2a8f4a; }
-    body.light .main-display.color-blue { color: #2a5faa; text-shadow: 0 0 4px #2a5faa; }
-    body.light .main-display.color-cyan { color: #008888; text-shadow: 0 0 4px #008888; }
-    body.light .main-display.color-pink { color: #c04080; text-shadow: 0 0 4px #c04080; }
-    body.light .main-display.color-yellow { color: #aa8822; text-shadow: 0 0 4px #aa8822; }
+    body.light .main-display.color-green { color: #2a8f4a; text-shadow: 0 0 5px #2a8f4a; }
+    body.light .main-display.color-blue { color: #2a5faa; text-shadow: 0 0 5px #2a5faa; }
+    body.light .main-display.color-cyan { color: #008888; text-shadow: 0 0 5px #008888; }
+    body.light .main-display.color-pink { color: #c04080; text-shadow: 0 0 5px #c04080; }
+    body.light .main-display.color-yellow { color: #aa8822; text-shadow: 0 0 5px #aa8822; }
     body.light .main-display.color-white { color: #2a3050; text-shadow: none; }
+
+    .display-screen::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .display-screen::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .display-screen::-webkit-scrollbar-thumb {
+      background: #4aff9e;
+      border-radius: 10px;
+    }
 
     .memory-indicator {
       font-family: 'Orbitron', monospace;
       font-size: 0.6rem;
       font-weight: 400;
       color: #ff9f4a;
-      margin-top: 8px;
+      margin-top: 6px;
       text-align: right;
       opacity: 0.8;
     }
 
-    /* HISTÓRICO */
+    /* HISTÓRICO - ÚLTIMO RESULTADO COM DESTAQUE */
     .history-section {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .history-line {
       height: 1px;
       background: rgba(114, 137, 218, 0.3);
-      margin: 8px 0;
+      margin: 6px 0;
     }
 
     .history-container {
@@ -293,7 +314,7 @@
       justify-content: center;
       gap: 10px;
       padding: 6px 0;
-      max-height: 65px;
+      max-height: 100px;
       overflow-y: auto;
     }
 
@@ -311,20 +332,38 @@
       border-radius: 10px;
     }
 
+    /* Item normal do histórico */
     .history-item {
       padding: 6px 14px;
       border-radius: 30px;
       font-family: 'Orbitron', monospace;
-      font-size: 0.8rem;
-      font-weight: 600;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: rgba(255, 159, 74, 0.2);
+      color: #ff9f4a;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 159, 74, 0.3);
+    }
+
+    /* Último resultado (mais recente) - DESTAQUE */
+    .history-item-last {
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.9rem;
+      font-weight: 800;
       background: #ff9f4a;
       color: #0a0e1a;
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.2s;
+      box-shadow: 0 0 8px rgba(255, 159, 74, 0.5);
+      border: 1px solid rgba(255, 159, 74, 0.8);
     }
 
-    .history-item:active {
+    .history-item:active, .history-item-last:active {
       transform: scale(0.95);
       opacity: 0.8;
     }
@@ -333,24 +372,24 @@
     .buttons {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
+      gap: 12px;
       margin-top: 4px;
     }
 
     button {
-      padding: 22px 0;
+      padding: 20px 0;
       border: none;
-      border-radius: 20px;
-      font-size: 1.4rem;
+      border-radius: 22px;
+      font-size: 1.35rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.06s linear;
-      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3);
       transform: translateY(-2px);
     }
 
     button:active {
-      transform: translateY(4px);
+      transform: translateY(3px);
       box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
     }
 
@@ -373,7 +412,7 @@
     .btn-memory {
       background: linear-gradient(145deg, #232842, #181d35);
       color: #b8c4ff;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
     
     .btn-memory:nth-child(3),
@@ -410,31 +449,27 @@
       color: #ffffff;
     }
 
-    /* RESPONSIVIDADE */
     @media (max-width: 500px) {
-      .calculator { padding: 16px 14px 20px; }
-      button { padding: 18px 0; font-size: 1.2rem; border-radius: 18px; }
-      .btn-memory { font-size: 0.85rem; }
-      .buttons { gap: 12px; }
-      .display { padding: 16px 18px; }
-      .display-screen { min-height: 80px; }
-      .font-size-1 { font-size: 3.2rem; }
-      .history-item { font-size: 0.75rem; padding: 5px 12px; }
-      .history-container { gap: 8px; max-height: 60px; }
+      .calculator { padding: 14px 12px 16px; }
+      button { padding: 16px 0; font-size: 1.15rem; border-radius: 18px; }
+      .btn-memory { font-size: 0.8rem; }
+      .buttons { gap: 10px; }
+      .display { padding: 14px 16px; }
+      .font-size-1 { font-size: 3rem; }
+      .font-size-2 { font-size: 2.7rem; }
+      .history-item, .history-item-last { font-size: 0.8rem; padding: 5px 12px; }
+      .history-item-last { font-size: 0.85rem; }
     }
 
     @media (max-width: 400px) {
-      .calculator { padding: 12px 12px 16px; }
-      button { padding: 15px 0; font-size: 1rem; border-radius: 16px; }
-      .btn-memory { font-size: 0.75rem; }
-      .buttons { gap: 10px; }
-      .display { padding: 14px 16px; }
-      .display-screen { min-height: 70px; }
-      .font-size-1 { font-size: 2.8rem; }
-      .history-item { font-size: 0.7rem; padding: 4px 10px; }
-      .history-container { max-height: 55px; }
-      .logo { font-size: 0.85rem; padding: 6px 12px; }
-      .clock { font-size: 0.8rem; padding: 5px 10px; }
+      .calculator { padding: 12px 10px 14px; }
+      button { padding: 14px 0; font-size: 1rem; border-radius: 16px; }
+      .btn-memory { font-size: 0.7rem; }
+      .buttons { gap: 8px; }
+      .display { padding: 12px 14px; }
+      .font-size-1 { font-size: 2.6rem; }
+      .history-item, .history-item-last { font-size: 0.7rem; padding: 4px 10px; }
+      .history-item-last { font-size: 0.75rem; }
     }
   </style>
 </head>
@@ -552,6 +587,13 @@
     displayEl.innerText = formatted;
     memoryIndicator.innerText = memory !== 0 ? 'M' : '';
     adjustFontSize();
+    
+    setTimeout(() => {
+      const container = document.querySelector('.display-screen');
+      if (container && displayEl.scrollWidth > container.clientWidth) {
+        container.scrollLeft = displayEl.scrollWidth;
+      }
+    }, 10);
   }
 
   function adjustFontSize() {
@@ -570,17 +612,23 @@
 
   function addToHistory(value) {
     let formattedValue = formatNumber(value.toString());
+    // Adiciona no início do array (mais recente primeiro)
     historyList.unshift(formattedValue);
-    if (historyList.length > 8) historyList.pop();
+    if (historyList.length > 10) historyList.pop();
     renderHistory();
   }
 
   function renderHistory() {
     historyContainer.innerHTML = '';
     
-    historyList.forEach(item => {
+    historyList.forEach((item, index) => {
       const historyItem = document.createElement('div');
-      historyItem.className = 'history-item';
+      // O primeiro item da lista (índice 0) é o mais recente
+      if (index === 0) {
+        historyItem.className = 'history-item-last';
+      } else {
+        historyItem.className = 'history-item';
+      }
       historyItem.innerText = item;
       historyItem.onclick = () => {
         current = item.replace(/\./g, '').replace(',', '.');
@@ -723,11 +771,11 @@
       const gain = audioCtx.createGain();
       osc.connect(gain);
       gain.connect(audioCtx.destination);
-      osc.frequency.value = 600;
-      gain.gain.value = 0.05;
+      osc.frequency.value = 880;
+      gain.gain.value = 0.12;
       osc.start();
-      gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
-      osc.stop(audioCtx.currentTime + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.12);
+      osc.stop(audioCtx.currentTime + 0.12);
     } catch(e) {}
   }
 
